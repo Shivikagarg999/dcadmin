@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react'
 import Sidebar from "@/app/dashboard/components/sidebar/page"
 import axios from 'axios'
 import { FiEye } from 'react-icons/fi'
-import ApproveWithdrawalModal from './edit/page'
-import ViewWithdrawalModal from './view/page'
+import ApproveWithdrawalModal from '../edit/page'
+import ViewWithdrawalModal from '../view/page'
 
 const WithdrawalsList = () => {
   const [withdrawals, setWithdrawals] = useState([])

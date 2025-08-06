@@ -6,7 +6,7 @@ import axios from 'axios'
 import { FiEdit2, FiTrash2, FiEye, FiPlus } from 'react-icons/fi'
 import CreateExpertModal from './CreateExpertModal/page'
 import EditExpertModal from './EditExpertModal/page'
-import ViewExpertModal from './ViewExpertModal/page'
+import ViewExpertModal from './ViewExpertModal/ViewExpertModal'
 
 const ExpertsList = () => {
   const [experts, setExperts] = useState([])
