@@ -20,7 +20,7 @@ export default function LoginPage() {
   setError('');
 
   try {
-    const res = await axios.post('http://localhost:5000/api/admin/login', { email, password });
+    const res = await axios.post('https://api.doubtsclear.com/api/admin/login', { email, password });
     const { user, token } = res.data;
 
     if (user.role === 'admin') {

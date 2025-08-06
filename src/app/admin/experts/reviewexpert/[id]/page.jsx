@@ -12,7 +12,7 @@ import {
   FiExternalLink,
 } from 'react-icons/fi'
 
-const UPLOADS_BASE_URL = 'https://doubt.deltinroyale.club'
+const UPLOADS_BASE_URL = 'https://api.doubtsclear.com'
 
 const ReviewExpertPage = () => {
   const { id } = useParams()
@@ -20,19 +20,21 @@ const ReviewExpertPage = () => {
   const [expert, setExpert] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-
   const [callStats, setCallStats] = useState(null)
   const [callLoading, setCallLoading] = useState(true)
   const [callError, setCallError] = useState('')
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
 
   useEffect(() => {
     const fetchExpert = async () => {
       try {
         const token = localStorage.getItem("token")
-        const res = await axios.get(`http://localhost:5000/api/admin/getExpertById/${id}`, {
+        const res = await axios.get(`https://api.doubtsclear.com/api/admin/getExpertById/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         })
         setExpert(res.data.expert)
+        setUsername(res.data.expert.username || '')
       } catch (err) {
         setError("Failed to fetch expert details")
       } finally {
@@ -46,7 +48,7 @@ const ReviewExpertPage = () => {
   useEffect(() => {
     const fetchCallStats = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/calls/by-expert/${id}`)
+        const res = await axios.get(`https://api.doubtsclear.com/api/calls/by-expert/${id}`)
         setCallStats(res.data)
       } catch (err) {
         setCallError('Failed to fetch call stats')
@@ -67,9 +69,16 @@ const ReviewExpertPage = () => {
   const handleVerify = async (status) => {
     try {
       const token = localStorage.getItem("token")
-      await axios.patch(`http://localhost:5000/api/admin/toggleVerification/${id}`, {}, {
+      if (!username || !password) return alert("Please provide username and password")
+
+      await axios.patch(`https://api.doubtsclear.com/api/admin/verifyExpert/${id}`, {
+        username,
+        password,
+        status
+      }, {
         headers: { Authorization: `Bearer ${token}` }
       })
+
       alert(`Expert marked as ${status}`)
     } catch (err) {
       alert("Operation failed")
@@ -120,10 +129,8 @@ const ReviewExpertPage = () => {
   return (
     <div className="flex min-h-screen bg-gray-100">
       <Sidebar />
-
       <main className="flex-1 p-6 overflow-auto">
         <div className="bg-white rounded-lg shadow overflow-hidden">
-          {/* Header */}
           <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <button
@@ -145,10 +152,8 @@ const ReviewExpertPage = () => {
             </div>
           </div>
 
-          {/* Main Content */}
-          <div className="p-6">
+          <div className="p-6 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Basic Info */}
               <div className="space-y-4">
                 <div className="flex items-center space-x-4">
                   {expert.image && (
@@ -159,94 +164,72 @@ const ReviewExpertPage = () => {
                     />
                   )}
                   <div>
-                    <h2 className="text-lg font-semibold">{expert.name}</h2>
+                    <h2 className="text-lg text-black font-semibold">{expert.name}</h2>
                     <p className="text-sm text-gray-600">{expert.email || 'No email provided'}</p>
                   </div>
                 </div>
-
                 <div className="grid grid-cols-2 gap-4">
                   <DetailItem label="Phone" value={expert.phone} />
                   <DetailItem label="Gender" value={expert.gender} />
-                  <DetailItem label="Date of Birth" value={expert.dob ? new Date(expert.dob).toLocaleDateString() : '-'} />
+                  <DetailItem label="DOB" value={expert.dob ? new Date(expert.dob).toLocaleDateString() : '-'} />
                   <DetailItem label="Experience" value={`${expert.experience} years`} />
-                  <DetailItem label="Per Minute Charge" value={`₹${expert.perMinuteCharge?.amount || '0'}`} />
+                  <DetailItem label="Per Min Charge" value={`₹${expert.perMinuteCharge?.amount || '0'}`} />
                   <DetailItem label="Google ID" value={expert.googleId || 'Not linked'} />
                 </div>
               </div>
 
-              {/* Documents */}
               <div className="space-y-4">
-                <h2 className="text-lg font-semibold text-gray-800">Verification Documents</h2>
+                <h2 className="text-lg font-semibold text-gray-800">Verification Docs</h2>
                 <div className="grid grid-cols-2 gap-4">
-                  <DocumentItem label="Aadhar Card" value={getDocumentUrl(expert.aadharCard)} />
-                  <DocumentItem label="PAN Card" value={getDocumentUrl(expert.pan)} />
+                  <DocumentItem label="Aadhar" value={getDocumentUrl(expert.aadharCard)} />
+                  <DocumentItem label="PAN" value={getDocumentUrl(expert.pan)} />
                   <DetailItem label="Qualification" value={expert.qualification?.name} />
                   <DetailItem label="Designation" value={expert.designation?.name} />
                 </div>
-
                 <DetailItem label="Expertise" value={expert.expertise?.map(e => e.name).join(', ')} />
-
                 {expert.verificationVideo && (
                   <div>
                     <p className="text-sm font-medium text-gray-500 mb-2">Verification Video</p>
-                    <div className="flex flex-col space-y-2">
-                      <video
-                        src={getDocumentUrl(expert.verificationVideo)}
-                        controls
-                        className="w-full max-w-md rounded border border-gray-200"
-                      />
-                      <a
-                        href={getDocumentUrl(expert.verificationVideo)}
-                        download
-                        className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
-                      >
-                        <FiDownload className="mr-1" /> Download Video
-                      </a>
-                    </div>
+                    <video
+                      src={getDocumentUrl(expert.verificationVideo)}
+                      controls
+                      className="w-full max-w-md rounded border border-gray-200"
+                    />
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Call Stats */}
-            <div className="mt-8">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">Call Stats</h2>
-
-              {callLoading ? (
-                <p>Loading call stats...</p>
-              ) : callError ? (
-                <p className="text-red-600">{callError}</p>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                  <div className="p-4 bg-gray-50 rounded shadow">
-                    <p className="text-sm text-gray-500">Total Calls</p>
-                    <p className="text-xl font-bold">{callStats.totalCalls}</p>
-                  </div>
-                  <div className="p-4 bg-green-50 rounded shadow">
-                    <p className="text-sm text-gray-500">Completed</p>
-                    <p className="text-xl font-bold">{callStats.completedCallsCount}</p>
-                  </div>
-                  <div className="p-4 bg-red-50 rounded shadow">
-                    <p className="text-sm text-gray-500">Missed</p>
-                    <p className="text-xl font-bold">{callStats.missedCallsCount}</p>
-                  </div>
-                  <div className="p-4 bg-blue-50 rounded shadow">
-                    <p className="text-sm text-gray-500">Total Duration (mins)</p>
-                    <p className="text-xl font-bold">{Math.round(callStats.totalDuration / 60)}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Additional Info */}
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-4">
               <DetailItem label="Address" value={expert.address} />
-              <DetailItem label="Wallet Balance" value={`₹${expert.walletBalance || '0'}`} />
+              <DetailItem label="Wallet" value={`₹${expert.walletBalance || '0'}`} />
               <DetailItem label="Created At" value={new Date(expert.createdAt).toLocaleString()} />
               <DetailItem label="Updated At" value={new Date(expert.updatedAt).toLocaleString()} />
             </div>
 
-            {/* Action Buttons */}
+            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text=black">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Expert Username</label>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="mt-1 block w-full text-black px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                  placeholder="Enter Username"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Expert Password</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="mt-1 block w-full text-black px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                  placeholder="Enter Password"
+                />
+              </div>
+            </div> */}
+
             <div className="mt-8 flex justify-end space-x-4">
               <button
                 onClick={() => handleVerify('rejected')}
@@ -293,4 +276,4 @@ const DocumentItem = ({ label, value }) => (
   </div>
 )
 
-export default ReviewExpertPage
+export default ReviewExpertPage;

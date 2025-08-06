@@ -21,13 +21,10 @@ const Sidebar = () => {
     { name: 'Dashboard', path: '/dashboard' },
     { name: 'Users', path: '/admin/users' },
     { name: 'Experts', isParent: true },
-    { name: 'Calls', path: '/admin/calls' },
-    { name: 'Designations', path: '/admin/designations' },
-    { name: 'Qualifications', path: '/admin/qualifications' },
-    { name: 'Expertise', path: '/admin/expertise' },
+    { name: 'WithDrawals', path: '/admin/withdrawals' },
+    { name: 'Payouts', path: '/admin/payouts' },
     { name: 'Wallets', path: '/admin/wallets' },
-    { name: 'Payments', path: '/admin/payments' },
-    { name: 'Recharges', path: '/admin/recharges' },
+    // { name: 'Recharges', path: '/admin/recharges' },
     { name: 'Reviews', path: '/admin/reviews' },
     { name: 'Logout' }
   ]
@@ -36,6 +33,10 @@ const Sidebar = () => {
     { name: 'All Experts', path: '/admin/experts' },
     { name: 'Verified Experts', path: '/admin/experts/VerifiedExperts' },
     { name: 'Unverified Experts', path: '/admin/experts/UnverifiedExperts' },
+    { name: 'Expertise', path: '/admin/experts/expertise' },
+    { name: 'Qualification', path: '/admin/experts/qualification' },
+    { name: 'Designation', path: '/admin/experts/designation' },
+    // { name: 'Subjects', path: '/admin/experts/subjects' },
   ]
 
   return (

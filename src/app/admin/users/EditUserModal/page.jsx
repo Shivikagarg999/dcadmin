@@ -38,7 +38,7 @@ const EditUserModal = ({ user, onClose, onUserUpdated }) => {
     
     try {
       const token = localStorage.getItem("token")
-      await axios.put(`http://localhost:3000/api/admin/users/${user._id}`, formData, {
+      await axios.put(`https://api.doubtsclear.com/api/admin/users/${user._id}`, formData, {
         headers: { Authorization: `Bearer ${token}` }
       })
       onUserUpdated()

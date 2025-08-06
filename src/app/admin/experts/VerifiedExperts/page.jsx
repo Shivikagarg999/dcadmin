@@ -30,7 +30,7 @@ const ExpertsList = () => {
   const fetchExperts = async () => {
     try {
       const token = localStorage.getItem("token")
-      const res = await axios.get('http://localhost:5000/api/admin/getVerifiedExperts', {
+      const res = await axios.get('https://api.doubtsclear.com/api/admin/getVerifiedExperts', {
         headers: { Authorization: `Bearer ${token}` }
       })
       setExperts(res.data.experts || [])
@@ -56,7 +56,7 @@ const ExpertsList = () => {
     if (confirm('Are you sure you want to delete this expert?')) {
       try {
         const token = localStorage.getItem("token")
-        await axios.delete(`http://localhost:3000/api/admin/experts/${expertId}`, {
+        await axios.delete(`https://api.doubtsclear.com/api/admin/experts/${expertId}`, {
           headers: { Authorization: `Bearer ${token}` }
         })
         fetchExperts()
@@ -95,7 +95,7 @@ const ExpertsList = () => {
                        <input
                            type="text"
                            placeholder="Search experts..."
-                           className="w-full px-4 py-2 border-b-2 border-gray-300 focus:border-[#E53935]"
+                           className="w-full px-4 py-2 text-black border-b-2 border-gray-300 focus:border-[#E53935]"
                            value={searchTerm}
                            onChange={(e) => setSearchTerm(e.target.value)}
                        />

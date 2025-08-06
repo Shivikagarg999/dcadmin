@@ -28,7 +28,7 @@ const CreateUserModal = ({ onClose, onUserCreated }) => {
     
     try {
       const token = localStorage.getItem("token")
-      await axios.post('http://localhost:3000/api/admin/users', formData, {
+      await axios.post('https://api.doubtsclear.com/api/admin/users', formData, {
         headers: { Authorization: `Bearer ${token}` }
       })
       onUserCreated()
